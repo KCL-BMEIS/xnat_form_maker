@@ -1,0 +1,172 @@
+<script type="text/javascript" LANGUAGE="javascript" src="$content.getURI('scripts/subjectAssessorData/proj_tools.js')"></SCRIPT>
+$page.setTitle("XDAT")
+$page.setLinkColor($ui.alink)
+$page.setVlinkColor($ui.vlink)
+
+#set ($imageSessionType = $om.getImageSessionData().getXSIType())
+
+#set($months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
+#set($days = [ 1..31 ])
+#set($years = [ $!turbineUtils.getYear()..1900])
+
+#if ($data.message)
+	<div class="alert">$data.message</div>
+#end
+
+#parse("macros/xMacros.vm")
+<link rel="stylesheet" href="$content.getURI("scripts/jquery-ui/jquery-ui-xnat.css")">
+<link rel="stylesheet" href="$content.getURI("scripts/jquery-timepicker/jquery.timepicker.min.css")">
+<script type="text/javascript" src="$content.getURI("scripts/jquery-ui/jquery-ui.min.js")"></script>
+<script type="text/javascript" src="$content.getURI("scripts/jquery-timepicker/jquery.timepicker.min.js")"></script>
+<script type="text/javascript" src="$content.getURI("scripts/formmakerx.js")"></script>
+
+
+
+
+
+
+<script type="text/javascript">
+    window.currentID="$!om.getId()";
+        #if($om.getProject())
+            #if($om.getProject().equals(""))
+            window.currentProject="$!project";
+            #else
+            window.currentProject="$!om.getProject()";
+            #end
+        #else
+        window.currentProject="$!project";
+        #end
+
+    window.currentSubject="$!subjectId";
+    window.currentLabel="$!om.getLabel()";
+</script>
+
+<script type="text/javascript">
+
+    function addCssClassToElement(element, cssClass) {
+        element.className += " " + cssClass;
+    }
+
+    function removeCssClassFromElement(element, cssClass) {
+        var reg = new RegExp('(\\s|^)' + cssClass + '(\\s|$)');
+        element.className = element.className.replace(reg, ' ');
+    }
+
+    function togglePanel(panelId, display) {
+        var panel = document.getElementById(panelId);
+        if (display) {
+            removeCssClassFromElement(panel, 'unhidden');
+            removeCssClassFromElement(panel, 'hidden');
+            addCssClassToElement(panel, 'unhidden');
+        } else {
+            removeCssClassFromElement(panel, 'unhidden');
+            removeCssClassFromElement(panel, 'hidden');
+            addCssClassToElement(panel, 'hidden');
+        }
+    }
+
+    
+</script>
+
+
+<p>
+<form ID="[HERE_FORM_REF]" name="[HERE_FORM_REF]" method="post" action="$link.setAction("ModifyItem")">
+<input type="hidden" name="project" value="$!{project}" >
+
+#if($vr)
+	<div class="error">Invalid parameters:<BR>$vr.toHTML()</div>
+    <HR>
+#end
+
+<table width="100%">
+	<tr>
+		<td>
+			<table width="100%">
+				<tr>
+					<td align="left" valign="middle">
+						<DIV class="edit_title">[HERE_FORM_TITLE]</DIV>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<table width="100%">
+				<tr>
+					<td valign="top">
+						       #set($form = "session")
+                               #set($mr=$om.getImageSessionData())
+      <table width="100%">
+
+
+			  <input type="hidden" name="[DATA_TYPE]/ID" id="[DATA_TYPE]/ID"  value="$item.getProperty("ID")"/>
+			  <input type="hidden" name="[DATA_TYPE]/label" id="[DATA_TYPE]/label"  value="$item.getProperty("label")"/>
+			  <input type="hidden" name="[DATA_TYPE]/project" id="[DATA_TYPE]/project"  value="$item.getProperty("project")"/>
+			 <input type="hidden" name="[DATA_TYPE].date.month" id="[DATA_TYPE].date.month" value=""/>
+  			  <input type="hidden" name="[DATA_TYPE].date.date" id="[DATA_TYPE].date.date" value=""/>
+   				 <input type="hidden" name="[DATA_TYPE].date.year" id="[DATA_TYPE].date.year" value=""/>
+			</TABLE>
+			
+			#xdatHiddenBox("[DATA_TYPE]/imageSession_ID" $item "")
+
+			<P><TABLE align="left" width="100%">
+				<TR>
+			<TD>
+				
+				<TABLE align="left">
+					<TR><TH align="left">Session: </TH>
+					#set($mr_id=$item.getProperty("imageSession_ID"))
+               #set($xsi_type=$mr.getXSIType())
+               #set($xsi_type_idstr="${xsi_type}.ID")
+				#if ($mr)
+					#set ( $click = "return popup('$link.setAction('DisplayItemAction').addPathInfo('search_element',$xsi_type).addPathInfo('search_field',$xsi_type_idstr).addPathInfo('search_value',$mr_id).addPathInfo('popup',true).addPathInfo('project',$project)', '','600','800');" )
+				  <TD><A CLASS=b href="#" onClick="$click">$!mr.getIdentifier($project)</A></TD>
+					#else
+						<TD>$!item.getProperty("imageSession_ID")</TD>
+					#end
+					</TR>
+					<TR><TH align="left" width=200>Visit Date: </TH><TD>$!mr.getDate()</TD></TR>
+					<TR><TH align="left">Subject: </TH><TD>$!mr.getSubjectData().getIdentifier($project,false)</TD></TR>
+
+				</TABLE>
+
+					</TD>
+				</TR>
+                
+			</TABLE>
+                       <tr> <th colspan="2"><hr/></th></tr>      
+                        
+                        <table>               
+                            [HERE_FORM_INPUTS] 
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+
+	<TR>
+		<TD>
+		#xdatEditProps($item $edit_screen)
+		<TR><TD COLSPAN=2 ALIGN=left><input type="button" ONCLICK="validateForm();"  name="eventSubmit_doInsert" value="Submit"/></TD></TR>
+		</TD>
+	</TR>
+</table>
+</form>
+
+<script type="text/javascript">
+function validateForm()
+{
+        var today = new Date();
+        document.getElementById('[DATA_TYPE].date.month').value = today.getMonth();
+        document.getElementById('[DATA_TYPE].date.date').value = today.getDate();
+        document.getElementById('[DATA_TYPE].date.year').value = today.getFullYear();
+
+   [CUSTOM JAVASCRIPT]
+   document.[HERE_FORM_REF].submit();
+   return true;
+  // validateExperimentForm();
+  // return false;
+}
+</script>

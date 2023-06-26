@@ -1,0 +1,116 @@
+#parse($turbineUtils.getTemplateName("report","xnat:imageAssessorData",$project))
+
+<script type="text/javascript">
+	document.title = "Assessment for $!mr.getIdentifier($project,false)";
+   
+</script>
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+$page.setTitle("[HERE_FORM_TITLE]")
+$page.setLinkColor($ui.alink)
+$page.setVlinkColor($ui.vlink)
+#if ($turbineUtils.GetPassedParameter("popup", $data))
+	#set ($popup = $turbineUtils.GetPassedParameter("popup", data) )
+	#set ($popup = "false")
+#end
+
+
+#parse("macros/xMacros.vm")
+
+#macro(cmicShowRadioYesNo $property)
+  	#set ($value = "")    
+    #set($value = $!item.getProperty($property))
+    #if("" == $value) 
+        (No value selected)   
+    #elseif ("$value" == "1")
+        Yes
+    #else
+        No
+    #end
+#end
+
+
+<script type="text/javascript">
+    window.currentID="$!om.getId()";
+        #if($om.getProject())
+            #if($om.getProject().equals(""))
+            window.currentProject="$!project";
+            #else
+            window.currentProject="$!om.getProject()";
+            #end
+        #else
+        window.currentProject="$!project";
+        #end
+
+    window.currentSubject="$!subjectId";
+    window.currentLabel="$!om.getLabel()";
+</script>
+
+<TABLE width="100%">
+	<TR>
+		<TD>
+			<table width="100%">
+				<tr>
+					<td align="left" valign="middle">
+						<DIV class="edit_title">[HERE_FORM_TITLE]</DIV>
+					</td>
+				</tr>
+			</table>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+			<TABLE width="100%">
+				<TR>
+					<TD valign="top">
+
+
+       #set($form = "session")
+       <table >
+           <tr>
+               <td></td>
+           </tr>
+           <tr>
+               #formLabel("Session:")
+               #set($session=$om.getImageSessionData())
+               #set($session_id=$item.getProperty("imageSession_ID"))
+               #if ($session)
+                   #set ($click = "return popup('$link.setAction('DisplayItemAction').addPathInfo('search_element','xnat:imageSessionData').addPathInfo('search_field','xnat:imageSessionData.ID').addPathInfo('search_value',$session_id).addPathInfo('popup',true).addPathInfo('project',$project)', '','600','800');")
+                   <td><a class=b href="#" onClick="$click">$!session.getIdentifier($project)</A></TD>
+               #else
+                   <td>$!item.getProperty("imageSession_ID")</td>
+               #end
+           </tr>
+           <tr>
+               #formLabel("Visit Date:")
+               <td>$!session.getDate()</td>
+           </tr>
+           <tr>
+               #formLabel("Subject:")
+               <td>$!session.getSubjectData().getIdentifier($project,false)</td>
+           </tr>
+           		#formLabel("Project:")<TD>$!item.getStringProperty("[DATA_TYPE]/project")</TD></TR> 
+            </table>	<TABLE><tr> <th colspan="2"><hr/></th></tr> 
+           <tr>#formLabel("Label")<TD>$!item.getStringProperty("[DATA_TYPE]/label")</TD></TR> 
+                    
+                    <tr> <td colspan="2">&nbsp;</td></tr>
+                
+
+                [HERE_FORM_INPUTS]
+             <tr>
+             <td colspan="2">&nbsp;</td>
+            </tr>
+
+							
+						</TABLE>
+					</TD>
+					<TD valign="top" align="right">
+						#parse($turbineUtils.getTemplateName("actions",$om.getXSIType(),$project))
+					</TD>
+				</TR>
+			</TABLE>
+		</TD>
+	</TR>
+</TR>
+</TABLE>

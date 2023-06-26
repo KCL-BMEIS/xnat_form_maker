@@ -1,0 +1,10 @@
+.idea/
+test.sh
+test176.sh
+/plugins/*jar
+/plugins/
+/xlsx/*xlsx
+/redcap_dict/*.csv
+/builder/__pycache__
+
+

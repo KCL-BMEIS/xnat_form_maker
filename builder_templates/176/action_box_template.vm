@@ -1,0 +1,20 @@
+
+#if($project.contains("[PROJECT]"))
+
+<li class="yuimenuitem">
+    <a class="yuimenuitemlabel" href="#insertbox">Add [SCHEMA] assessment</a>
+    <div id="insertbox[SCHEMA]" class="yuimenu">
+        <div class="bd">
+            <ul class="first-of-type" style="width: 170px;">
+            
+
+
+<!-- ADD_HERE -- >
+
+
+             </ul>
+        </div>
+    </div>
+</li>
+
+#end

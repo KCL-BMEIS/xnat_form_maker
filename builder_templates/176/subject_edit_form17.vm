@@ -1,0 +1,141 @@
+$page.setTitle("[HERE_FORM_TITLE]")
+$page.setLinkColor($ui.alink)
+$page.setVlinkColor($ui.vlink)
+
+
+
+
+<script type="text/javascript">
+window.currentID="$!om.getId()";
+    #if($om.getProject())
+     #if($om.getProject().equals(""))
+window.currentProject="$!project";
+     #else
+window.currentProject="$!om.getProject()";
+     #end
+    #else
+window.currentProject="$!project";
+    #end
+
+window.currentSubject="$!om.getSubjectId()";
+window.currentLabel="$!om.getLabel()";
+
+
+   function addCssClassToElement(element, cssClass) {
+        element.className += " " + cssClass;
+    }
+
+    function removeCssClassFromElement(element, cssClass) {
+        var reg = new RegExp('(\\s|^)' + cssClass + '(\\s|$)');
+        element.className = element.className.replace(reg, ' ');
+    }
+
+    function togglePanel(panelId, display) {
+        var panel = document.getElementById(panelId);
+        if (display) {
+            removeCssClassFromElement(panel, 'unhidden');
+            removeCssClassFromElement(panel, 'hidden');
+            addCssClassToElement(panel, 'unhidden');
+        } else {
+            removeCssClassFromElement(panel, 'unhidden');
+            removeCssClassFromElement(panel, 'hidden');
+            addCssClassToElement(panel, 'hidden');
+        }
+    }
+
+</script>
+
+
+#if ($data.message)
+<div class="error">$data.message</div>
+#end
+
+
+#parse("macros/xMacros.vm")
+<link rel="stylesheet" href="$content.getURI("scripts/jquery-ui/jquery-ui-xnat.css")">
+<link rel="stylesheet" href="$content.getURI("scripts/jquery-timepicker/jquery.timepicker.min.css")">
+<script type="text/javascript" src="$content.getURI("scripts/jquery-ui/jquery-ui.min.js")"></script>
+<script type="text/javascript" src="$content.getURI("scripts/jquery-timepicker/jquery.timepicker.min.js")"></script>
+<script type="text/javascript" src="$content.getURI("scripts/formmakerx.js")"></script>
+
+
+
+<div id="[HERE_FORM_REF]AssessmentFormDiv">
+<form ID="[HERE_FORM_REF]AssessmentForm" name="[HERE_FORM_REF]AssessmentForm" method="post" action="$link.setAction("ModifySubjectAssessorData")">
+    <input type="hidden" name="project" value="$!{project}">
+    <input type="hidden" name="part_id" value="$!{subjectId}">
+    <input type='hidden' name='[DATA_TYPE]/ID'  id='[DATA_TYPE]/ID'  value='$!item.getProperty("ID")'/>
+    <input type="hidden" name="[DATA_TYPE]/project" id="[DATA_TYPE]/project"  value='$!{project}'/>
+    <input type='hidden' name='[DATA_TYPE]/subject_ID' id='[DATA_TYPE]/subject_ID'  value='$!{subjectId}'/>
+    <input type='hidden' name='[DATA_TYPE]/label' id='[DATA_TYPE]/label'  value='$!label'/>
+    <input type="hidden" name="[DATA_TYPE].date.month" id="[DATA_TYPE].date.month" value=""/>
+    <input type="hidden" name="[DATA_TYPE].date.date" id="[DATA_TYPE].date.date" value=""/>
+    <input type="hidden" name="[DATA_TYPE].date.year" id="[DATA_TYPE].date.year" value=""/>
+    <input type="hidden" name="$om.getXSIType()/ID" id="$om.getXSIType()/ID" value="$!om.getId()"/>
+
+    #if($vr)
+    <div class="error">Invalid parameters:<BR>$vr.toHTML()</div>
+    <HR>
+    #end
+
+<table width="100%">
+<tr>
+    <td>
+        <table width="100%">
+            <tr>
+                <td align="left" valign="middle">
+                    <div class="edit_title">[HERE_FORM_TITLE]</div>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+<tr>
+    <td>
+        <table width="100%">
+            <tr>
+                <td valign="top" colspan=2>
+                    <table>
+                        <tr>
+                            <td colspan="2">#parse("/screens/EditProjectSpecificFields.vm")</td>
+                        </tr>
+
+                    
+
+
+                      
+                        [HERE_FORM_INPUTS] 
+
+                      </table>
+                 </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+<tr>
+    <td>
+        #xdatEditProps($item $edit_screen)
+    </td>
+</tr>
+<tr>
+    <td colspan=2 align=left>
+        <input type="button" onclick="validateForm();" name="eventSubmit_doInsert" value="Submit"/>
+    </td>
+</tr>
+</table>
+</form>
+</div>
+
+<script type="text/javascript">
+    function validateForm() {
+        var today = new Date();
+        document.getElementById('[DATA_TYPE].date.month').value = today.getMonth();
+        document.getElementById('[DATA_TYPE].date.date').value = today.getDate();
+        document.getElementById('[DATA_TYPE].date.year').value = today.getFullYear();
+
+        [CUSTOM JAVASCRIPT]
+
+        document.[HERE_FORM_REF]AssessmentForm.submit();
+        return true;
+    }
+</script>
